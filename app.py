@@ -621,7 +621,4 @@ if st.button("🔄 إعادة توليد البيانات الوهمية"):
     st.session_state.tasks = make_data()
     st.rerun()
 
-st.markdown("<div class='foot'>أمانة العاصمة المقدسة · وكالة التحول الرقمي · نموذج أولي ببيانات تجريبية</div>", unsafe_allow_html=True)
-if st.button("🔄 إعادة توليد البيانات الوهمية"):
-    st.session_state.tasks = make_data()
-    st.rerun()
+
