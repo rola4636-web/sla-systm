@@ -467,7 +467,7 @@ if haram:
 else:
     bg = "linear-gradient(135deg, #0b4f2c, #157a40 60%, #1e8e4e)"
 logo_html = (
-    f'<img src="{logo}" style="height:92px;background:#fff;border-radius:16px;padding:8px">' if logo else ""
+    f'<img src="{logo}" style="height:62px;background:#fff;border-radius:14px;padding:10px 14px">' if logo else ""
 )
 st.markdown(
     f'<div class="hero" style="background:{bg}">{logo_html}<div>'
