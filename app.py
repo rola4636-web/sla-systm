@@ -203,13 +203,28 @@ st.markdown(_css, unsafe_allow_html=True)
 esc = ihtml.escape
 
 
-def img_b64(*names):
-    for n in names:
-        if os.path.exists(n):
-            mime = "image/png" if n.lower().endswith("png") else "image/jpeg"
-            with open(n, "rb") as f:
-                return f"data:{mime};base64," + base64.b64encode(f.read()).decode()
+def find_image(*keywords):
+    folders = [os.path.dirname(os.path.abspath(__file__)), os.getcwd()]
+    for folder in folders:
+        try:
+            files = sorted(os.listdir(folder))
+        except OSError:
+            continue
+        for f in files:
+            name = f.lower()
+            if any(k in name for k in keywords) and name.endswith((".png", ".jpg", ".jpeg", ".webp")):
+                return os.path.join(folder, f)
     return None
+
+
+def img_b64(*keywords):
+    path = find_image(*keywords)
+    if not path:
+        return None
+    ext = path.lower().rsplit(".", 1)[-1]
+    mime = {"png": "image/png", "webp": "image/webp"}.get(ext, "image/jpeg")
+    with open(path, "rb") as f:
+        return f"data:{mime};base64," + base64.b64encode(f.read()).decode()
 
 
 def fmt(h):
@@ -445,8 +460,8 @@ def save_task(task_id, **changes):
 # الواجهة
 # ---------------------------------------------------------------
 current_role = st.session_state.get("role", ROLES[0])
-logo = img_b64("logo.png", "logo.jpg", "logo.jpeg")
-haram = img_b64("haram.jpg", "haram.jpeg", "haram.png")
+logo = img_b64("logo", "شعار")
+haram = img_b64("haram", "حرم")
 if haram:
     bg = f"linear-gradient(rgba(8,60,35,.90), rgba(20,120,66,.80)), url({haram}) center/cover"
 else:
