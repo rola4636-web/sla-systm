@@ -95,8 +95,8 @@ PAT_W = (
 PAT_G = PAT_W.replace("%23ffffff", "%231b6b3a").replace("0.13", "0.07")
 
 CSS = """
-<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap');
 @keyframes rise {from {opacity:0; transform:translateY(14px);} to {opacity:1; transform:none;}}
 @keyframes shine {0% {transform:translateX(120%);} 100% {transform:translateX(-120%);}}
 @keyframes fillbar {from {width:0;}}
@@ -195,7 +195,9 @@ div[role="radiogroup"] > label:has(input:checked) p {color:#fff !important;}
 div[data-baseweb="select"] > div, .stTextInput input, .stTextArea textarea {border-radius:12px;}
 </style>
 """
-st.markdown(CSS.replace("__PAT_G__", PAT_G).replace("__PAT_W__", PAT_W), unsafe_allow_html=True)
+_css = CSS.replace("__PAT_G__", PAT_G).replace("__PAT_W__", PAT_W)
+_css = "\n".join(line.strip() for line in _css.splitlines() if line.strip())
+st.markdown(_css, unsafe_allow_html=True)
 
 
 # ---------------------------------------------------------------
@@ -613,6 +615,11 @@ else:
 
     section("مقارنة الإدارات بنسبة الالتزام")
     card("الترتيب من الأعلى إلى الأدنى", bars_html(dept_compliance(data)))
+
+st.markdown("<div class='foot'>أمانة العاصمة المقدسة · وكالة التحول الرقمي · نموذج أولي ببيانات تجريبية</div>", unsafe_allow_html=True)
+if st.button("🔄 إعادة توليد البيانات الوهمية"):
+    st.session_state.tasks = make_data()
+    st.rerun()
 
 st.markdown("<div class='foot'>أمانة العاصمة المقدسة · وكالة التحول الرقمي · نموذج أولي ببيانات تجريبية</div>", unsafe_allow_html=True)
 if st.button("🔄 إعادة توليد البيانات الوهمية"):
