@@ -5,10 +5,41 @@ import pandas as pd
 import streamlit as st
 
 st.set_page_config(page_title="نظام تتبع SLA", page_icon="⏱️", layout="wide")
+import base64
+import os
+
 st.markdown(
-    "<style>html, body, [class*='css'] {direction: rtl; text-align: right;}</style>",
+    """<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+html, body, [class*='css'] {direction: rtl; text-align: right; font-family: 'Tajawal', sans-serif;}
+.stApp {background: #f4faf6;}
+[data-testid="stSidebar"] {background: #e3f1e8; border-left: 4px solid #1b6b3a;}
+[data-testid="stMetric"] {background: white; border: 1px solid #d3e8da; border-right: 6px solid #1b6b3a;
+  border-radius: 14px; padding: 14px 16px; box-shadow: 0 3px 10px rgba(27,107,58,0.10);}
+[data-testid="stMetricValue"] {color: #1b6b3a; font-weight: 700;}
+.stButton > button, .stFormSubmitButton > button {background: #1b6b3a; color: white; border: none;
+  border-radius: 10px; padding: 8px 22px; font-weight: 700;}
+.stButton > button:hover, .stFormSubmitButton > button:hover {background: #14532d; color: white;}
+.stTabs [data-baseweb="tab"] {font-weight: 700; font-size: 16px;}
+.stTabs [aria-selected="true"] {color: #1b6b3a;}
+.stTabs [data-baseweb="tab-highlight"] {background-color: #1b6b3a;}
+h2, h3 {color: #14532d;}
+.hero {border-radius: 20px; padding: 26px 30px; display: flex; align-items: center; gap: 22px;
+  color: white; margin-bottom: 22px; box-shadow: 0 8px 24px rgba(20,83,45,0.25);}
+.hero h1 {color: white; margin: 0; font-size: 30px; line-height: 1.5;}
+.hero p {margin: 4px 0 0 0; opacity: 0.92; font-size: 16px;}
+</style>""",
     unsafe_allow_html=True,
 )
+
+
+def img_b64(*names):
+    for n in names:
+        if os.path.exists(n):
+            mime = "image/png" if n.lower().endswith("png") else "image/jpeg"
+            with open(n, "rb") as f:
+                return f"data:{mime};base64," + base64.b64encode(f.read()).decode()
+    return None
 
 # ---------------------------------------------------------------
 # الإعدادات والقواعد (من الوثيقة)
@@ -197,7 +228,7 @@ def kpis(d):
 def state_chart(d):
     open_d = d[~d["done"]]
     counts = open_d["sla_state"].value_counts()
-    st.bar_chart(counts)
+    st.bar_chart(counts, color="#1b6b3a")
 
 
 def save_task(task_id, **changes):
@@ -210,7 +241,23 @@ def save_task(task_id, **changes):
 # ---------------------------------------------------------------
 # الواجهة
 # ---------------------------------------------------------------
-st.title("⏱️ نظام إدارة المهام ومتابعة مدة الإنجاز (SLA)")
+logo = img_b64("logo.png", "logo.jpg", "logo.jpeg")
+haram = img_b64("haram.jpg", "haram.jpeg", "haram.png")
+if haram:
+    bg = f"linear-gradient(rgba(10,70,40,.88), rgba(20,120,66,.78)), url({haram}) center/cover"
+else:
+    bg = "linear-gradient(135deg,#0f5132,#1f8a4c)"
+if logo:
+    logo_html = f'<img src="{logo}" style="height:84px;background:white;border-radius:14px;padding:8px">'
+else:
+    logo_html = '<div style="font-size:60px">🕋</div>'
+st.markdown(
+    f'<div class="hero" style="background:{bg}">{logo_html}<div>'
+    "<h1>نظام إدارة المهام ومتابعة مدة الإنجاز</h1>"
+    "<p>أمانة العاصمة المقدسة | وكالة التحول الرقمي | SLA Tracking System</p>"
+    "</div></div>",
+    unsafe_allow_html=True,
+)
 
 role = st.sidebar.radio("اختاري الدور", ["مدير النظام", "الموظف", "مدير الإدارة", "الإدارة العليا"])
 if st.sidebar.button("إعادة توليد البيانات"):
@@ -327,5 +374,5 @@ else:
 
     st.subheader("نسب الالتزام بالـ SLA لكل إدارة")
     comp = pd.Series({dp: compliance(data[data["dept"] == dp]) for dp in DEPT_EMPLOYEES})
-    st.bar_chart(comp)
+    st.bar_chart(comp, color="#1b6b3a")
     st.dataframe(comp.round(1).rename("نسبة الالتزام %"))
